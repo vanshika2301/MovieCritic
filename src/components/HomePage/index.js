@@ -6,7 +6,6 @@ import MovieModal from "../Modals/movieModal";
 import { useState } from "react";
 
 export default function HomePage({ movies }) {
-  const [name, setName] = useState("");
   const [moviesData, setMoviesData] = useState(movies);
   const supabase = createClientComponentClient();
   const handleDelete = async (id) => {
@@ -22,9 +21,11 @@ export default function HomePage({ movies }) {
     const { data } = await supabase
       .from("Movie")
       .select("*")
-      .ilike("name", `%${name}%`);
+      .ilike("name", `${name}%`);
     if (data) {
       setMoviesData(data);
+    } else {
+      setMoviesData(movies);
     }
   };
 
@@ -33,23 +34,15 @@ export default function HomePage({ movies }) {
       <h1 className="text-3xl font-semibold py-10">
         The best movie reviews site!
       </h1>
-      <div className="flex gap-2">
+      <div className="flex">
         <input
           type="text"
           placeholder="Search by Name"
-          onChange={(e) =>
-            e.target.value ? setName(e.target.value) : setMoviesData(movies)
-          }
+          onChange={(e) => handleSearch(e.target.value)}
           name="name"
           id="name"
-          className="block w-64 rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-400 sm:text-sm sm:leading-6"
+          className="block w-72 rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-400 sm:text-sm sm:leading-6"
         />
-        <button
-          className="bg-violet-500 text-white px-5 py-2 rounded-sm"
-          onClick={() => handleSearch(name)}
-        >
-          Search
-        </button>
       </div>
       <div className="flex flex-wrap gap-8 pt-10">
         {moviesData?.map((movie) => (
